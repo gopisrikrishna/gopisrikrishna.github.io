@@ -1,0 +1,20 @@
+# Gopi Sri Krishna Yarlagadda
+
+> Lead Full Stack Engineer at Ascend Cargo in Dallas, Texas. Builds an AI-powered freight and logistics SaaS platform from scratch and works on agentic AI, retrieval-augmented generation (RAG) and the Model Context Protocol (MCP). Also written "Gopi Sri Krishna".
+
+## Profiles
+- [Portfolio and resume](https://gopisrikrishna.github.io/resume/): full work history, skills and projects
+- [LinkedIn](https://www.linkedin.com/in/gopisrikrishna/): professional profile
+- [GitHub](https://github.com/gopisrikrishna): code and open-source projects
+- [Medium](https://medium.com/@gopisrikrishna.y): articles
+
+## Work
+- [Ascend Cargo](https://ascendcargo.com/): freight and logistics software company where he is Lead Full Stack Engineer (October 2024 to present)
+- [solarnetwork-mcp](https://github.com/gopisrikrishna/solarnetwork-mcp): open-source MCP server that reads SolarNetwork telemetry, finds dated equipment faults and writes field-ready PDF service reports
+
+## Key facts
+- Current role: Lead Full Stack Engineer, Ascend Cargo
+- Focus: agentic AI, RAG, MCP, backend microservices, SaaS platform engineering
+- Stack: Python, Java, JavaScript, React, Spring Boot, Kubernetes, Docker, Google Cloud, GitHub Actions, OAuth 2.0, JWT
+- Education: M.S. Computer Science, The University of Texas at Arlington (2024); B.Tech Computer Science, Dhanekula Institute of Engineering and Technology (2022)
+- Contact: gopisrikrishna.y@gmail.com
