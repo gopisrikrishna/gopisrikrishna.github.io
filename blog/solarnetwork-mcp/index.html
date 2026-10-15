@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>An AI Agent That Diagnoses Solar Faults, and Says “Not Assessed”</title>
+<meta name="description" content="How I built solarnetwork-mcp, an MCP server that lets AI agents find dated solar faults, estimate lost energy and write technician work orders.">
+<meta name="author" content="Gopi Sri Krishna Yarlagadda">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://gopisrikrishna.github.io/blog/solarnetwork-mcp/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="An AI Agent That Diagnoses Solar Faults, and Refuses to Say “Healthy” When It Can’t Know">
+<meta property="og:description" content="How I built solarnetwork-mcp, an MCP server that lets AI agents find dated solar faults, estimate lost energy and write technician work orders.">
+<meta property="og:url" content="https://gopisrikrishna.github.io/blog/solarnetwork-mcp/">
+<meta property="og:image" content="https://gopisrikrishna.github.io/blog/solarnetwork-mcp/img/fault-timeline.png">
+<meta property="og:site_name" content="Gopi Sri Krishna Yarlagadda">
+<meta property="article:author" content="https://gopisrikrishna.github.io/resume/">
+<meta property="article:published_time" content="2026-10-15T22:30:00Z">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="An AI Agent That Diagnoses Solar Faults, and Refuses to Say “Healthy” When It Can’t Know">
+<meta name="twitter:description" content="How I built solarnetwork-mcp, an MCP server that lets AI agents find dated solar faults, estimate lost energy and write technician work orders.">
+<meta name="twitter:image" content="https://gopisrikrishna.github.io/blog/solarnetwork-mcp/img/fault-timeline.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BlogPosting",
+      "@id": "https://gopisrikrishna.github.io/blog/solarnetwork-mcp/#post",
+      "headline": "An AI Agent That Diagnoses Solar Faults, and Refuses to Say “Healthy” When It Can’t Know",
+      "alternativeHeadline": "What I learned turning live solar telemetry into tools an AI agent can call",
+      "description": "How I built solarnetwork-mcp, an MCP server that lets AI agents find dated solar faults, estimate lost energy and write technician work orders.",
+      "url": "https://gopisrikrishna.github.io/blog/solarnetwork-mcp/",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://gopisrikrishna.github.io/blog/solarnetwork-mcp/"
+      },
+      "image": [
+        "https://gopisrikrishna.github.io/blog/solarnetwork-mcp/img/fault-timeline.png",
+        "https://gopisrikrishna.github.io/blog/solarnetwork-mcp/img/architecture.png",
+        "https://gopisrikrishna.github.io/blog/solarnetwork-mcp/img/tool-map.png"
+      ],
+      "datePublished": "2026-10-15T22:30:00Z",
+      "dateModified": "2026-10-15T22:30:00Z",
+      "inLanguage": "en-US",
+      "wordCount": 1614,
+      "keywords": [
+        "MCP",
+        "Model Context Protocol",
+        "AI agents",
+        "solar asset management",
+        "SolarNetwork",
+        "fault detection",
+        "TypeScript",
+        "agentic AI"
+      ],
+      "author": {
+        "@id": "https://gopisrikrishna.github.io/resume/#person"
+      },
+      "publisher": {
+        "@id": "https://gopisrikrishna.github.io/resume/#person"
+      },
+      "about": [
+        {
+          "@id": "https://gopisrikrishna.github.io/resume/#solarnetwork-mcp"
+        }
+      ],
+      "copyrightHolder": {
+        "@id": "https://gopisrikrishna.github.io/resume/#person"
+      },
+      "copyrightYear": 2026
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Gopi Sri Krishna Yarlagadda",
+          "item": "https://gopisrikrishna.github.io/resume/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "solarnetwork-mcp",
+          "item": "https://gopisrikrishna.github.io/blog/solarnetwork-mcp/"
+        }
+      ]
+    }
+  ]
+}
+</script>
+<style>
+:root { color-scheme: light dark; --fg:#1f2933; --muted:#52606d; --bg:#ffffff; --line:#d9dee3; --accent:#216c47; --code:#f2f4f6; }
+@media (prefers-color-scheme: dark) { :root { --fg:#e6e9ec; --muted:#a3adb7; --bg:#14181c; --line:#2c343b; --accent:#6fcf9f; --code:#1d2329; } }
+body { margin:0; background:var(--bg); color:var(--fg); font:18px/1.7 Georgia, "Times New Roman", serif; }
+article { max-width:720px; margin:0 auto; padding:32px 20px 64px; }
+h1 { font:700 2.1rem/1.2 system-ui, -apple-system, "Segoe UI", sans-serif; margin:.2em 0 .3em; }
+h2 { font:700 1.45rem/1.3 system-ui, -apple-system, "Segoe UI", sans-serif; margin:2em 0 .5em; }
+.sub { color:var(--muted); font-size:1.1rem; margin:0 0 .8em; }
+.by, .fine { color:var(--muted); font:.9rem/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+a { color:var(--accent); }
+figure { margin:1.6em 0; }
+img { max-width:100%; height:auto; border:1px solid var(--line); border-radius:6px; }
+figcaption { color:var(--muted); font:.85rem/1.5 system-ui, sans-serif; margin-top:.5em; }
+blockquote { margin:1.2em 0; padding:.2em 1em; border-left:4px solid var(--accent); color:var(--muted); font-style:italic; }
+code { background:var(--code); padding:.1em .35em; border-radius:4px; font-size:.88em; }
+pre { background:var(--code); padding:14px 16px; overflow-x:auto; border-radius:6px; }
+pre code { padding:0; background:none; }
+hr { border:0; border-top:1px solid var(--line); margin:2.5em 0 1.5em; }
+</style>
+</head>
+<body>
+<article>
+
+<h1>An AI Agent That Diagnoses Solar Faults, and Refuses to Say “Healthy” When It Can’t Know</h1>
+<p class="sub"><em>What I learned turning live solar telemetry into tools an AI agent can call</em></p>
+<p class="by">By <a href="https://gopisrikrishna.github.io/resume/">Gopi Sri Krishna Yarlagadda</a>, Lead Full Stack Engineer at
+<a href="https://ascendcargo.com/">Ascend Cargo</a> &middot; October 15, 2026 &middot; Dallas, TX</p>
+
+<p>Ask a solar site &ldquo;is anything wrong?&rdquo; and you get a surprisingly hard question. You need the node ID, the right
+endpoint, to know that <code>watts</code> and <code>wattHours</code> are different questions, and then you read JSON.
+I wanted to ask it in one sentence and get a diagnosis back. So I built <strong>solarnetwork-mcp</strong>, an MCP server
+that turns SolarNetwork solar telemetry into tools an AI agent can call.</p>
+
+<p>This is a personal project and it runs entirely on public data, so every number in this article can be checked
+against SolarNetwork&rsquo;s own API. The part I am proudest of is not a detection algorithm. It is that the tool says
+&ldquo;not assessed&rdquo; when it cannot know.</p>
+
+<h2>The idea in one sentence</h2>
+<blockquote>&ldquo;Is anything wrong at node 1000? If output is down, tell me whether it&rsquo;s weather or equipment.&rdquo;</blockquote>
+<p>The agent discovers the site&rsquo;s streams, picks a date range, runs the aggregation, compares each inverter against its
+siblings, and answers in plain English. The split of work is the whole design. The server does what a language model is bad
+at: request handling, pagination, unit semantics, and knowing which of nine streams is the weather sensor. The agent does
+what it is good at: deciding what to ask and explaining the answer.</p>
+<figure>
+<img src="https://gopisrikrishna.github.io/blog/solarnetwork-mcp/img/architecture.png" alt="Architecture diagram: you ask an AI agent, which talks to the solarnetwork-mcp server over MCP, which reads SolarNetwork's public API" width="1400">
+<figcaption>The server sits between the agent and SolarNetwork&rsquo;s public API. Nothing in the path needs credentials.</figcaption>
+</figure>
+
+
+<h2>Real data, no credentials</h2>
+<p>SolarNetwork&rsquo;s public endpoints publish data from <strong>567 nodes</strong>, which I counted on October 15, 2026 by probing node IDs
+1 to 5000. Of those, 336 have generation, inverter or irradiance streams that the server can classify, 288 of them reported
+in the last 24 hours, and 195 of those have two or more inverters, which is what fault detection needs. Several update to the
+minute, and the core US fleet has nearly seven years of history.</p>
+<p>The server exposes ten tools in four groups: discover, read, diagnose and report.</p>
+<figure>
+<img src="https://gopisrikrishna.github.io/blog/solarnetwork-mcp/img/tool-map.png" alt="The ten tools grouped into Discover, Read, Diagnose and Report" width="1400">
+<figcaption>Ten tools, four jobs: from &ldquo;which site?&rdquo; to &ldquo;send a technician to inverter 1&rdquo;.</figcaption>
+</figure>
+
+<p>One detail matters more than it sounds. <code>get_energy</code> computes true accumulated energy from meter readings instead
+of averaging power, because those two numbers answer different questions, and mixing them up is how dashboards quietly lie.</p>
+
+<h2>The hard part is not crying wolf</h2>
+<p>Detecting a fault is easy. Not raising false alarms is the work.</p>
+<ul>
+<li><strong>Cloud cover must not look like a broken inverter.</strong> Detection is peer-relative: each inverter is compared with its
+siblings, so a passing cloud affects them all equally. Where a pyranometer exists, irradiance is used as a physical weather control.</li>
+<li><strong>A fault already running when the window opens is labelled a lower bound.</strong> The tool never invents a start date it cannot see.</li>
+<li><strong>&ldquo;No faults found&rdquo; is not the same as &ldquo;healthy&rdquo;.</strong> A site with fewer than two inverters has no peers to compare,
+so the tool reports it as <em>not assessed</em>.</li>
+<li><strong>Meter counters reset.</strong> A reset silently corrupts every energy total that spans it, so the tool raises it as an event
+and never reports negative site energy.</li>
+</ul>
+
+<h2>A real example: node 1000</h2>
+<p>I ran an asset review on node 1000 for January 1 to September 1, 2026. It reported 10 events across 243 daily buckets, 6 of them
+still open at the end of the window, and an estimated 3,716 kWh not delivered, about 11.5% of what the site should have made.
+The findings:</p>
+<ul>
+<li><strong>Inverter 1 produced nothing from 2026-05-17 to 2026-08-03: 79 days</strong>, while a sibling kept producing, so sunlight was available.</li>
+<li><strong>Inverter 1 was already down when the window opened</strong> and stayed down until 2026-01-13, labelled &ldquo;at least 13 days&rdquo; because the real start is out of view.</li>
+<li><strong>Inverters 2 and 3 both produced nothing from 2026-02-11 to 2026-02-15.</strong></li>
+<li><strong>Inverter 4 has reported 0 W on every bucket since 2026-03-25, 160 days, while its energy meter kept advancing</strong> by 7,887 kWh over the window.</li>
+<li><strong>The site meter and Inverter 1&rsquo;s counter both ran backwards on 2026-03-15</strong> (&minus;2,358 kWh and &minus;37 kWh), which is a counter reset or meter replacement.</li>
+<li>Three registered sources, GEN/101 to GEN/103, never returned a single bucket.</li>
+</ul>
+<figure>
+<img src="https://gopisrikrishna.github.io/blog/solarnetwork-mcp/img/fault-timeline.png" alt="Node 1000 fault timeline for January to August 2026: Inverter 1 has no data for 79 days, and Inverter 4 reads 0 W from March 25" width="1400">
+<figcaption>Node 1000, January to August 2026, from public daily data. Red: no data at all. Amber: power reads 0 W while the energy field is non-zero.</figcaption>
+</figure>
+
+<p>The two long faults look alike on a chart and are opposites in practice. Inverter 1 is genuinely out: it needs a technician. Inverter 4
+looks dead because its power reads zero, but its energy field is non-zero on all 160 days, so the device is alive and only the power reading is lost.
+That is a configuration fix, not a truck roll. A health check keyed on <code>watts</code> alone would page someone about a working inverter every night.</p>
+
+<h2>From diagnosis to a work order</h2>
+<p>A finding is only useful if someone can act on it. <code>create_service_report</code> turns the review into prioritised jobs, each with a
+plain-language cause, the evidence, numbered steps for site, the tools to bring and explicit sign-off criteria. For node 1000 it produced 8 jobs and a
+17-page printable field pack, with tick boxes and a notes sheet. Everything is plain ASCII, so nothing turns into black boxes in a PDF or a ticketing system.</p>
+<figure>
+<img src="https://gopisrikrishna.github.io/blog/solarnetwork-mcp/img/report-page-1.png" alt="Page 1 of the generated field service pack for site 0145: summary, safety notice and a table of eight jobs" width="1400">
+<figcaption>Page 1 of the field pack the tool generated for node 1000: headline, safety notice and the job list.</figcaption>
+</figure>
+
+<figure>
+<img src="https://gopisrikrishna.github.io/blog/solarnetwork-mcp/img/report-page-3.png" alt="A single job page of the field service pack with what happened, why it matters, steps with tick boxes and sign-off criteria" width="1400">
+<figcaption>Each job gets its own page: what happened, why it matters, numbered steps with tick boxes, tools, and how you know it is fixed.</figcaption>
+</figure>
+
+
+<h2>The same mistake, in my own data</h2>
+<p>This project taught me the lesson twice. My first scan of public node IDs found 102 nodes. The real number was 556, and 567 today.
+The first scan mapped every non-OK HTTP response to &ldquo;no such node&rdquo;, collapsing four different outcomes into one. Permission denied (403)
+and rate limited (429) were both read as absent. Sampling 37 IDs the old scan called empty found 5 with real data, a 13.5% false-negative rate.</p>
+<p>It is exactly the failure the tool is built to avoid: treating <em>unknown</em> as <em>absent</em>, or <em>not assessed</em> as <em>healthy</em>.
+A proper sweep of IDs 1 to 12000 classified every outcome separately: 556 public nodes with data, 197 public but never reporting, and 11,246 private.</p>
+
+<h2>Check it yourself</h2>
+<p>Because the data is public you do not have to take any of this on trust. This call returns the date range of node 1000 straight from SolarNetwork:</p>
+<pre><code>curl "https://data.solarnetwork.net/solarquery/api/v1/pub/range/interval?nodeId=1000"</code></pre>
+<p>The project also ships 28 checks against fixed historical windows on live nodes. I ran them on October 15, 2026: <strong>28 passed, 0 failed</strong>.
+Among them are the 79-day outage on node 1000, a counter reset pinpointed to 2026-06-03 on node 900, and a year of data that exceeds SolarQuery&rsquo;s
+1000-row page cap with every row still fetched. A failed check means either the server regressed or SolarNetwork restated history, and each one prints what it
+expected against what it got so you can tell which.</p>
+
+<h2>What it cannot do</h2>
+<ul>
+<li>Sites with fewer than two inverters cannot be assessed, because peer comparison needs peers.</li>
+<li>Public nodes do not expose nameplate ratings, so loss figures are peer-scaled estimates, not warranty calculations.</li>
+<li>Fault detection runs on daily buckets, so a device silent for six hours is invisible.</li>
+<li>Stream classification depends on a path convention, so sites that name streams <code>Main</code> or <code>SMAInverter1</code> come back unclassified.</li>
+</ul>
+
+<h2>What I took from building it</h2>
+<p>Give an agent a tool that is honest about its limits and the agent becomes honest too. An agent that can only hear &ldquo;healthy&rdquo; or &ldquo;faulty&rdquo; will invent
+certainty. One that can hear &ldquo;I can&rsquo;t know&rdquo; will say so. The most useful behaviour in this project is a two-word status.</p>
+
+<p>The source is viewable on GitHub: <a href="https://github.com/gopisrikrishna/solarnetwork-mcp">github.com/gopisrikrishna/solarnetwork-mcp</a>.
+It is published with all rights reserved, so if you want to use or adapt any of it, please ask first.</p>
+
+<hr>
+<p class="fine"><strong>Disclaimer.</strong> This is a personal project and these are my own opinions, not those of my employer, Ascend Cargo. It is not affiliated with,
+endorsed by or sponsored by SolarNetwork or its operators. Findings and loss figures are automated estimates from public data, not engineering advice, and they may be wrong
+or out of date. Nothing here replaces a site&rsquo;s own isolation, permit-to-work or PPE procedures, and any field work must be done by qualified people. The software is provided
+&ldquo;as is&rdquo;, without warranty, and to the maximum extent permitted by law I am not liable for any use of it or of this article.
+&copy; 2026 Gopi Sri Krishna Yarlagadda. All rights reserved.</p>
+<p class="fine"><strong>About the author.</strong> Gopi Sri Krishna Yarlagadda is a Lead Full Stack Engineer at Ascend Cargo, building an AI-powered freight and logistics SaaS
+platform with agentic AI, RAG and MCP. Portfolio: <a href="https://gopisrikrishna.github.io/resume/">gopisrikrishna.github.io/resume</a> &middot;
+LinkedIn: <a href="https://www.linkedin.com/in/gopisrikrishna/">linkedin.com/in/gopisrikrishna</a> &middot;
+GitHub: <a href="https://github.com/gopisrikrishna">github.com/gopisrikrishna</a></p>
+
+</article>
+</body>
+</html>
