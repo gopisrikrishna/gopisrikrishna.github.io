@@ -41,9 +41,9 @@
         "https://gopisrikrishna.github.io/blog/solarnetwork-mcp/img/tool-map.png"
       ],
       "datePublished": "2026-10-15T22:30:00Z",
-      "dateModified": "2026-10-15T22:30:00Z",
+      "dateModified": "2026-10-15T22:39:46Z",
       "inLanguage": "en-US",
-      "wordCount": 1614,
+      "wordCount": 1611,
       "keywords": [
         "MCP",
         "Model Context Protocol",
@@ -142,8 +142,7 @@ what it is good at: deciding what to ask and explaining the answer.</p>
 <h2>Real data, no credentials</h2>
 <p>SolarNetwork&rsquo;s public endpoints publish data from <strong>567 nodes</strong>, which I counted on October 15, 2026 by probing node IDs
 1 to 5000. Of those, 336 have generation, inverter or irradiance streams that the server can classify, 288 of them reported
-in the last 24 hours, and 195 of those have two or more inverters, which is what fault detection needs. Several update to the
-minute, and the core US fleet has nearly seven years of history.</p>
+in the last 24 hours, and 195 of those have two or more inverters, which is what fault detection needs. Many report every few minutes, and the core US fleet has nearly seven years of history.</p>
 <p>The server exposes ten tools in four groups: discover, read, diagnose and report.</p>
 <figure>
 <img src="https://gopisrikrishna.github.io/blog/solarnetwork-mcp/img/tool-map.png" alt="The ten tools grouped into Discover, Read, Diagnose and Report" width="1400">
@@ -160,7 +159,7 @@ of averaging power, because those two numbers answer different questions, and mi
 siblings, so a passing cloud affects them all equally. Where a pyranometer exists, irradiance is used as a physical weather control.</li>
 <li><strong>A fault already running when the window opens is labelled a lower bound.</strong> The tool never invents a start date it cannot see.</li>
 <li><strong>&ldquo;No faults found&rdquo; is not the same as &ldquo;healthy&rdquo;.</strong> A site with fewer than two inverters has no peers to compare,
-so the tool reports it as <em>not assessed</em>.</li>
+so the tool reports it as &ldquo;not assessed&rdquo;.</li>
 <li><strong>Meter counters reset.</strong> A reset silently corrupts every energy total that spans it, so the tool raises it as an event
 and never reports negative site energy.</li>
 </ul>
@@ -170,11 +169,11 @@ and never reports negative site energy.</li>
 still open at the end of the window, and an estimated 3,716 kWh not delivered, about 11.5% of what the site should have made.
 The findings:</p>
 <ul>
-<li><strong>Inverter 1 produced nothing from 2026-05-17 to 2026-08-03: 79 days</strong>, while a sibling kept producing, so sunlight was available.</li>
-<li><strong>Inverter 1 was already down when the window opened</strong> and stayed down until 2026-01-13, labelled &ldquo;at least 13 days&rdquo; because the real start is out of view.</li>
-<li><strong>Inverters 2 and 3 both produced nothing from 2026-02-11 to 2026-02-15.</strong></li>
-<li><strong>Inverter 4 has reported 0 W on every bucket since 2026-03-25, 160 days, while its energy meter kept advancing</strong> by 7,887 kWh over the window.</li>
-<li><strong>The site meter and Inverter 1&rsquo;s counter both ran backwards on 2026-03-15</strong> (&minus;2,358 kWh and &minus;37 kWh), which is a counter reset or meter replacement.</li>
+<li><strong>Inverter 1 produced nothing from May 17 to August 3: 79 days</strong>, while a sibling kept producing, so sunlight was available.</li>
+<li><strong>Inverter 1 was already down when the window opened</strong> and stayed down until January 13, labelled &ldquo;at least 13 days&rdquo; because the real start is out of view.</li>
+<li><strong>Inverters 2 and 3 both produced nothing from February 11 to February 15.</strong></li>
+<li><strong>Inverter 4 has reported 0 W on every bucket since March 25, 160 days, while its energy meter kept advancing</strong> by 7,887 kWh over the window.</li>
+<li><strong>The site meter and Inverter 1&rsquo;s counter both ran backwards on March 15</strong> (&minus;2,358 kWh and &minus;37 kWh), which is a counter reset or meter replacement.</li>
 <li>Three registered sources, GEN/101 to GEN/103, never returned a single bucket.</li>
 </ul>
 <figure>
@@ -202,9 +201,8 @@ plain-language cause, the evidence, numbered steps for site, the tools to bring 
 
 
 <h2>The same mistake, in my own data</h2>
-<p>This project taught me the lesson twice. My first scan of public node IDs found 102 nodes. The real number was 556, and 567 today.
-The first scan mapped every non-OK HTTP response to &ldquo;no such node&rdquo;, collapsing four different outcomes into one. Permission denied (403)
-and rate limited (429) were both read as absent. Sampling 37 IDs the old scan called empty found 5 with real data, a 13.5% false-negative rate.</p>
+<p>This project taught me the lesson twice. My earlier scans of public node IDs counted only about 100 to 140 nodes. The real number was 556, and 567 today. Those scans mapped every non-OK HTTP response to &ldquo;no such node&rdquo;, collapsing four different outcomes into one. Permission denied (403)
+and rate limited (429) were both read as absent. Sampling 37 IDs the old scans called empty found 5 with real data, a 13.5% false-negative rate.</p>
 <p>It is exactly the failure the tool is built to avoid: treating <em>unknown</em> as <em>absent</em>, or <em>not assessed</em> as <em>healthy</em>.
 A proper sweep of IDs 1 to 12000 classified every outcome separately: 556 public nodes with data, 197 public but never reporting, and 11,246 private.</p>
 
@@ -212,7 +210,7 @@ A proper sweep of IDs 1 to 12000 classified every outcome separately: 556 public
 <p>Because the data is public you do not have to take any of this on trust. This call returns the date range of node 1000 straight from SolarNetwork:</p>
 <pre><code>curl "https://data.solarnetwork.net/solarquery/api/v1/pub/range/interval?nodeId=1000"</code></pre>
 <p>The project also ships 28 checks against fixed historical windows on live nodes. I ran them on October 15, 2026: <strong>28 passed, 0 failed</strong>.
-Among them are the 79-day outage on node 1000, a counter reset pinpointed to 2026-06-03 on node 900, and a year of data that exceeds SolarQuery&rsquo;s
+Among them are the 79-day outage on node 1000, a counter reset pinpointed to June 3 on node 900, and a year of data that exceeds SolarQuery&rsquo;s
 1000-row page cap with every row still fetched. A failed check means either the server regressed or SolarNetwork restated history, and each one prints what it
 expected against what it got so you can tell which.</p>
 
