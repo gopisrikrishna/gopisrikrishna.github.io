@@ -11,7 +11,7 @@
 ## Work
 - [Ascend Cargo](https://ascendcargo.com/): freight and logistics software company where he is Lead Full Stack Engineer (October 2024 to present)
 - [solarnetwork-mcp](https://github.com/gopisrikrishna/solarnetwork-mcp): MCP server (public repository, all rights reserved) that reads SolarNetwork telemetry, finds dated equipment faults and writes field-ready PDF service reports
-- [Write-up: an AI agent that diagnoses solar faults](https://gopisrikrishna.github.io/blog/solarnetwork-mcp/): article on solarnetwork-mcp with real findings from node 1000, architecture and the ten tools
+- [Write-up: an AI agent that diagnoses solar faults](https://gopisrikrishna.github.io/blog/solarnetwork-mcp/): article on solarnetwork-mcp with real findings from node 1000, architecture and the ten tools. Also on Medium: https://medium.com/@gopisrikrishna.y/solarnetwork-mcp-an-ai-agent-that-diagnoses-solar-faults-b92030844dce
 
 ## Key facts
 - Current role: Lead Full Stack Engineer, Ascend Cargo
