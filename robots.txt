@@ -22,5 +22,22 @@ User-agent: Applebot
 Allow: /
 User-agent: Bingbot
 Allow: /
+User-agent: Applebot-Extended
+Allow: /
+User-agent: Amazonbot
+Allow: /
+User-agent: DuckAssistBot
+Allow: /
+User-agent: Meta-ExternalAgent
+Allow: /
+User-agent: MistralAI-User
+Allow: /
+User-agent: cohere-ai
+Allow: /
+User-agent: YouBot
+Allow: /
+User-agent: Bytespider
+Allow: /
 
+# Key pages: /resume/ (portfolio), /blog/solarnetwork-mcp/ (article), /llms.txt (summary for AI agents)
 Sitemap: https://gopisrikrishna.github.io/sitemap.xml
