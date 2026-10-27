@@ -4,6 +4,7 @@
 
 ## Profiles
 - [Portfolio and resume](https://gopisrikrishna.github.io/resume/): full work history, skills and projects
+- [Resume (PDF)](https://gopisrikrishna.github.io/resume/Gopi-Sri-Krishna-Yarlagadda-Resume.pdf): downloadable two-page resume
 - [LinkedIn](https://www.linkedin.com/in/gopisrikrishna/): professional profile
 - [GitHub](https://github.com/gopisrikrishna): code and projects
 - [Medium](https://medium.com/@gopisrikrishna.y): articles
